@@ -13,11 +13,11 @@ import javax.persistence.*;
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid",strategy = "uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "member_id")
     private String id;
 
-    @Column(name = "name",length = 255)
+    @Column(name = "name", length = 255)
     private String name;
 
     @Column(name = "email")
@@ -35,4 +35,10 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private LivingArea livingArea;
+
+    public void addInfo(String gender, int age, String livingArea) {
+        this.gender = Gender.valueOf(gender);
+        this.age = age;
+        this.livingArea = LivingArea.valueOf(livingArea);
+    }
 }

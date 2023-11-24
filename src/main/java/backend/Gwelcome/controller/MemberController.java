@@ -126,7 +126,7 @@ public class MemberController {
                                 try {
                                     NaverUserDTO naverUserDTO = objectMapper.readValue(profileResponse, NaverUserDTO.class);
                                     memberService.naverSignUp(naverUserDTO);
-                                    return Mono.just(profileResponse);
+                                    return Mono.just(naverUserDTO.getResponse().getEmail());
                                 } catch (JsonProcessingException e) {
                                     return Mono.error(e);
                                 }

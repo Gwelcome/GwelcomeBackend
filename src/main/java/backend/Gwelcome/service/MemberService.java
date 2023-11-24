@@ -3,8 +3,8 @@ package backend.Gwelcome.service;
 import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
 import backend.Gwelcome.dto.naverlogin.NaverUserDTO;
-import backend.Gwelcome.model.Gender;
-import backend.Gwelcome.model.LivingArea;
+import backend.Gwelcome.exception.ErrorCode;
+import backend.Gwelcome.exception.GwelcomeException;
 import backend.Gwelcome.model.Member;
 import backend.Gwelcome.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,12 @@ public class MemberService {
 
     @Transactional
     public void kakaoSignUp(KakaoUserDTO kakaoUserDTO){
+
+        boolean existEmail = memberRepository.existsByEmail(kakaoUserDTO.getKakao_account().getEmail());
+        if (existEmail) {
+            throw new GwelcomeException(ErrorCode.DUPLICATE_EMAIL);
+        }
+
         Member member = Member.builder()
                 .name(kakaoUserDTO.getProperties().getNickname())
                 .email(kakaoUserDTO.getKakao_account().getEmail())
@@ -30,6 +36,12 @@ public class MemberService {
 
     @Transactional
     public void naverSignUp(NaverUserDTO naverUserDTO){
+
+        boolean existEmail = memberRepository.existsByEmail(naverUserDTO.getResponse().getEmail());
+        if (existEmail) {
+            throw new GwelcomeException(ErrorCode.DUPLICATE_EMAIL);
+        }
+
         Member member = Member.builder()
                 .name(naverUserDTO.getResponse().getName())
                 .email(naverUserDTO.getResponse().getEmail())
@@ -41,13 +53,7 @@ public class MemberService {
 
     @Transactional
     public void signUp(signUpRequestDTO signUpRequest) {
-
-        Member member = Member.builder()
-                .gender(Gender.valueOf(signUpRequest.getGender()))
-                .age(signUpRequest.getAge())
-                .livingArea(LivingArea.valueOf(signUpRequest.getLivingArea()))
-                .build();
-
-        memberRepository.save(member);
+        Member existMember = memberRepository.findByEmail(signUpRequest.getEmail());
+        existMember.addInfo(signUpRequest.getGender(),signUpRequest.getAge(),signUpRequest.getLivingArea());
     }
 }
