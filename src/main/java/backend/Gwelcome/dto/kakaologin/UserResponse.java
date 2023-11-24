@@ -1,4 +1,4 @@
-package backend.Gwelcome.dto;
+package backend.Gwelcome.dto.kakaologin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

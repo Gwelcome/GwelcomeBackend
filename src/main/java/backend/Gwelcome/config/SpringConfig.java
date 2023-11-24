@@ -1,6 +1,6 @@
 package backend.Gwelcome.config;
 
-import backend.Gwelcome.Controller.ResponseEntityByWebClient;
+import backend.Gwelcome.controller.ResponseEntityByWebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
