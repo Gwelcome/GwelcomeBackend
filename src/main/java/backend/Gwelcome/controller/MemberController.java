@@ -1,6 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.kakaologin.KakaoOauthToken;
+import backend.Gwelcome.dto.naverlogin.NaverOauthToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,14 @@ import reactor.core.publisher.Mono;
 public class MemberController {
 
     @Value("${kakao.client-id}")
-    private String client_id;
+    private String kakao_client_id;
+    @Value("${naver.client-id}")
+    private String naver_client_id;
+    @Value("${naver.client_secret}")
+    private String naver_client_secret;
+
     @GetMapping("/auth/kakao/callback")
-    @Operation(
-            summary = "카카오로그인",
-            description = "카카오 로그인을 진행합니다."
-    )
+    @Operation(summary = "카카오로그인", description = "카카오 로그인을 진행합니다.")
     public Mono<String> kakaoCallback(@RequestParam String code) {
 
         WebClient webClient = WebClient.builder()
@@ -39,7 +42,7 @@ public class MemberController {
 
         MultiValueMap<String, String> tokenParams = new LinkedMultiValueMap<>();
         tokenParams.add("grant_type", "authorization_code");
-        tokenParams.add("client_id", client_id);
+        tokenParams.add("client_id", kakao_client_id);
         tokenParams.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");
         tokenParams.add("code", code);
 
@@ -68,4 +71,48 @@ public class MemberController {
                     }
                 });
     }
+
+    @GetMapping("/login/oauth2/code/naver")
+    @Operation(summary = "네이버로그인",description = "네이버 로그인을 진행합니다.")
+    public Mono<String> naverCallback(@RequestParam String code) {
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl("https://nid.naver.com")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .build();
+
+        MultiValueMap<String, String> tokenParams = new LinkedMultiValueMap<>();
+        tokenParams.add("grant_type", "authorization_code");
+        tokenParams.add("client_id", naver_client_id);
+        tokenParams.add("client_secret", naver_client_secret);
+        tokenParams.add("redirect_uri", "http://localhost:8080/login/oauth2/code/naver");
+        tokenParams.add("code", code);
+
+        Mono<String> tokenResponseMono = webClient.post()
+                .uri("/oauth2.0/token")
+                .body(BodyInserters.fromFormData(tokenParams))
+                .retrieve()
+                .bodyToMono(String.class);
+
+        return tokenResponseMono.flatMap(tokenResponse -> {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                NaverOauthToken oauthToken = objectMapper.readValue(tokenResponse, NaverOauthToken.class);
+
+                WebClient profileWebClient = WebClient.builder()
+                        .baseUrl("https://openapi.naver.com")
+                        .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken.getAccess_token())
+                        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                        .build();
+
+                return profileWebClient.get()
+                        .uri("/v1/nid/me")
+                        .retrieve()
+                        .bodyToMono(String.class);
+            } catch (JsonProcessingException e) {
+                return Mono.error(e);
+            }
+        });
+    }
+
 }
