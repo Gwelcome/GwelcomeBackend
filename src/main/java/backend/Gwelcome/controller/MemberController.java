@@ -1,6 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.kakaologin.KakaoOauthToken;
+import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
 import backend.Gwelcome.dto.naverlogin.NaverOauthToken;
 import backend.Gwelcome.dto.naverlogin.NaverUserDTO;
@@ -37,44 +38,48 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/auth/kakao/callback")
-    @Operation(summary = "카카오로그인", description = "카카오 로그인을 진행합니다.")
     public Mono<String> kakaoCallback(@RequestParam String code) {
+        WebClient webClient = WebClient.builder().build();
 
-        WebClient webClient = WebClient.builder()
-                .baseUrl("https://kauth.kakao.com")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-        MultiValueMap<String, String> tokenParams = new LinkedMultiValueMap<>();
-        tokenParams.add("grant_type", "authorization_code");
-        tokenParams.add("client_id", naver_client_id);
-        tokenParams.add("client_secret", naver_client_secret);
-        tokenParams.add("redirect_uri", "http://localhost:8080/login/oauth2/code/naver");
-        tokenParams.add("code", code);
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", kakao_client_id);
+        params.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");
+        params.add("code", code);
 
         return webClient.post()
-                .uri("/oauth/token")
-                .body(BodyInserters.fromFormData(tokenParams))
+                .uri("https://kauth.kakao.com/oauth/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(params))
                 .retrieve()
                 .bodyToMono(String.class)
                 .flatMap(tokenResponse -> {
                     ObjectMapper objectMapper = new ObjectMapper();
+                    KakaoOauthToken oauthToken;
                     try {
-                        KakaoOauthToken oauthToken = objectMapper.readValue(tokenResponse, KakaoOauthToken.class);
-
-                        WebClient profileWebClient = WebClient.builder()
-                                .baseUrl("https://kapi.kakao.com")
-                                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken.getAccess_token())
-                                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                .build();
-
-                        return profileWebClient.post()
-                                .uri("/v2/user/me")
-                                .retrieve()
-                                .bodyToMono(String.class);
+                        oauthToken = objectMapper.readValue(tokenResponse, KakaoOauthToken.class);
                     } catch (JsonProcessingException e) {
                         return Mono.error(e);
                     }
+
+                    WebClient webClient2 = WebClient.builder().build();
+
+                    return webClient2.post()
+                            .uri("https://kapi.kakao.com/v2/user/me")
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + oauthToken.getAccess_token())
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .flatMap(profileResponse -> {
+                                try {
+                                    KakaoUserDTO kakaoUserDTO = objectMapper.readValue(profileResponse, KakaoUserDTO.class);
+                                    memberService.kakaoSignUp(kakaoUserDTO);
+                                    return Mono.just(profileResponse);
+                                } catch (JsonProcessingException e) {
+                                    return Mono.error(e);
+                                }
+                            });
                 });
     }
 

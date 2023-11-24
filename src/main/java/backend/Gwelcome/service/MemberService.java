@@ -1,5 +1,6 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
 import backend.Gwelcome.dto.naverlogin.NaverUserDTO;
 import backend.Gwelcome.model.Gender;
@@ -15,6 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+
+    @Transactional
+    public void kakaoSignUp(KakaoUserDTO kakaoUserDTO){
+        Member member = Member.builder()
+                .name(kakaoUserDTO.getProperties().getNickname())
+                .email(kakaoUserDTO.getKakao_account().getEmail())
+                .profile_image_url(kakaoUserDTO.getProperties().getProfile_image())
+                .provider("카카오로그인")
+                .build();
+        memberRepository.save(member);
+    }
 
     @Transactional
     public void naverSignUp(NaverUserDTO naverUserDTO){
