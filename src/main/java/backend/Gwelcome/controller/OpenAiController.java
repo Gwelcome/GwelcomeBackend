@@ -1,4 +1,4 @@
-package backend.Gwelcome.Controller;
+package backend.Gwelcome.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package backend.Gwelcome.Controller;
+package backend.Gwelcome.controller;
 
 import java.util.Collections;
 

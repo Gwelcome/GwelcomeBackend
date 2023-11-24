@@ -1,6 +1,6 @@
-package backend.Gwelcome.Controller;
+package backend.Gwelcome.controller;
 
-import backend.Gwelcome.dto.UserResponse;
+import backend.Gwelcome.dto.kakaologin.UserResponse;
 import backend.Gwelcome.dto.openai.OpenAiChatResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
