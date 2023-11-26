@@ -17,11 +17,14 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private String id;
 
-    @Column(name = "name", length = 255)
-    private String name;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "profile_image_url")
     private String profile_image_url;
@@ -35,6 +38,9 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private LivingArea livingArea;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public void addInfo(String gender, int age, String livingArea) {
         this.gender = Gender.valueOf(gender);
