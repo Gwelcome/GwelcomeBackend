@@ -1,10 +1,16 @@
 package backend.Gwelcome.controller;
 
+import backend.Gwelcome.dto.ResponseDTO;
+import backend.Gwelcome.dto.kakaologin.KakaoLoginResponseDTO;
 import backend.Gwelcome.dto.kakaologin.KakaoOauthToken;
 import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
+import backend.Gwelcome.dto.login.TokensResponseDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
+import backend.Gwelcome.dto.naverlogin.NaverLoginResponseDTO;
 import backend.Gwelcome.dto.naverlogin.NaverOauthToken;
 import backend.Gwelcome.dto.naverlogin.NaverUserDTO;
+import backend.Gwelcome.jwt.JwtProvider;
+import backend.Gwelcome.model.Member;
 import backend.Gwelcome.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,9 +42,11 @@ public class MemberController {
     private String naver_client_secret;
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/auth/kakao/callback")
-    public Mono<String> kakaoCallback(@RequestParam String code) {
+    @Operation(summary = "카카오 로그인", description = "카카오 로그인 api 입니다.")
+    public Mono<?> kakaoCallback(@RequestParam String code) {
         WebClient webClient = WebClient.builder().build();
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -74,8 +82,21 @@ public class MemberController {
                             .flatMap(profileResponse -> {
                                 try {
                                     KakaoUserDTO kakaoUserDTO = objectMapper.readValue(profileResponse, KakaoUserDTO.class);
-                                    memberService.kakaoSignUp(kakaoUserDTO);
-                                    return Mono.just(profileResponse);
+                                    Member member = memberService.memberFind(kakaoUserDTO.getKakao_account().getEmail());
+                                    if (member.getUsername() == null) {
+                                        memberService.kakaoSignUp(kakaoUserDTO);
+                                        String id = memberService.memberFindId(kakaoUserDTO.getKakao_account().getEmail());
+                                        TokensResponseDTO tokens = jwtProvider.createTokensByLogin(id);
+                                        KakaoLoginResponseDTO resultDTO = KakaoLoginResponseDTO.builder()
+                                                .email(kakaoUserDTO.getKakao_account().getEmail())
+                                                .atk(tokens.getAtk())
+                                                .rtk(tokens.getRtk())
+                                                .build();
+                                        return Mono.just(new ResponseDTO<>(HttpStatus.OK.value(), resultDTO));
+                                    }
+                                    String id = memberService.memberFindId(kakaoUserDTO.getKakao_account().getEmail());
+                                    TokensResponseDTO tokens = jwtProvider.createTokensByLogin(id);
+                                    return Mono.just(new ResponseDTO<>(HttpStatus.OK.value(),tokens));
                                 } catch (JsonProcessingException e) {
                                     return Mono.error(e);
                                 }
@@ -84,7 +105,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/oauth2/code/naver")
-    public Mono<String> naverCallback(@RequestParam String code) {
+    @Operation(summary = "네이버 로그인", description = "네이버 로그인 api 입니다.")
+    public Mono<?> naverCallback(@RequestParam String code) {
         WebClient.Builder webClientBuilder = WebClient.builder();
 
         HttpHeaders headers = new HttpHeaders();
@@ -125,8 +147,22 @@ public class MemberController {
                             .flatMap(profileResponse -> {
                                 try {
                                     NaverUserDTO naverUserDTO = objectMapper.readValue(profileResponse, NaverUserDTO.class);
-                                    memberService.naverSignUp(naverUserDTO);
-                                    return Mono.just(naverUserDTO.getResponse().getEmail());
+                                    Member member = memberService.memberFind(naverUserDTO.getResponse().getEmail());
+
+                                    if (member.getUsername() == null){
+                                        memberService.naverSignUp(naverUserDTO);
+                                        String id = memberService.memberFindId(naverUserDTO.getResponse().getEmail());
+                                        TokensResponseDTO tokens = jwtProvider.createTokensByLogin(id);
+                                        NaverLoginResponseDTO resultDTO = NaverLoginResponseDTO.builder()
+                                                .email(naverUserDTO.getResponse().getEmail())
+                                                .atk(tokens.getAtk())
+                                                .rtk(tokens.getRtk()).build();
+                                        return Mono.just(new ResponseDTO<>(HttpStatus.OK.value(),resultDTO));
+                                    }
+
+                                    String id = memberService.memberFindId(naverUserDTO.getResponse().getEmail());
+                                    TokensResponseDTO tokens = jwtProvider.createTokensByLogin(id);
+                                    return Mono.just(new ResponseDTO<>(HttpStatus.OK.value(),tokens));
                                 } catch (JsonProcessingException e) {
                                     return Mono.error(e);
                                 }
