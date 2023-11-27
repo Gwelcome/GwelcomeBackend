@@ -1,6 +1,8 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.policy.MyPolicyResponseDTO;
 import backend.Gwelcome.dto.policy.PolicyRegisterDto;
+import backend.Gwelcome.dto.policy.PolicyResponseDTO;
 import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
 import backend.Gwelcome.exception.ErrorCode;
 import backend.Gwelcome.exception.GwelcomeException;
@@ -11,8 +13,13 @@ import backend.Gwelcome.repository.MemberRepository;
 import backend.Gwelcome.repository.PolicyRepository;
 import backend.Gwelcome.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +70,16 @@ public class PolicyService {
                 .policy(policy)
                 .build();
         replyRepository.save(reply);
+    }
+
+    public Page<PolicyResponseDTO> list(Pageable pageable) {
+        Page<Policy> policyList = policyRepository.findAll(pageable);
+        Page<PolicyResponseDTO> result = policyList.map(m->PolicyResponseDTO.builder()
+                .id(m.getId())
+                .title(m.getName())
+                .intro(m.getIntroduction())
+                .image_url(m.getPhoto_url())
+                .build());
+        return result;
     }
 }
