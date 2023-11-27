@@ -1,5 +1,6 @@
 package backend.Gwelcome.jwt;
 
+import backend.Gwelcome.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -25,12 +26,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        String exceptionMessage = (String) request.getAttribute("exception");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        JwtTokenError jwtTokenError = new JwtTokenError(exceptionMessage, HttpStatus.UNAUTHORIZED);
-        String res = this.convertObjectToJson(jwtTokenError);
+        String res = ErrorCode.JWT_MALFORMED.getMessage();
         response.getWriter().print(res);
     }
 
