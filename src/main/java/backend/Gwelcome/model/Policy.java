@@ -2,6 +2,7 @@ package backend.Gwelcome.model;
 
 import backend.Gwelcome.BaseTimeEntity;
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorColumn(name = "parent")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Policy extends BaseTimeEntity {
+public class Policy extends BaseTimeEntity{
 
     @Id @GeneratedValue
     @Column(name = "policy_id")
@@ -36,6 +35,38 @@ public class Policy extends BaseTimeEntity {
     private int support_scale;
     @Column(name = "extraInfo")
     private String extraInfo;
+    @Column(name = "request_procedure")
+    private String request_procedure;
+    @Column(name = "judge_presentation")
+    private String judge_presentation;
+    @Column(name = "application_site")
+    private String application_site;
+    @Column(name = "documents")
+    private String documents;
+    @Column(name = "age")
+    private String age;
+    @Column(name = "living_income")
+    private String living_income;
+    @Column(name = "university")
+    private String university;
+    @Column(name = "major")
+    private String major;
+    @Column(name = "job_state")
+    private String job_state;
+    @Column(name = "specialization")
+    private String specialization;
+    @Column(name = "additional_clues")
+    private String additional_clues;
+    @Column(name = "partition_restrict_apply")
+    private String partition_restrict_apply;
+    @Column(name = "useful_info")
+    private String useful_info;
+    @Column(name = "host_organization")
+    private String host_organization;
+    @Column(name = "operating_organization")
+    private String operating_organization;
+    @Column(name = "reference_site")
+    private String reference_site;
 
     public void addLike(Likes likes){
         this.likes.add(likes);
