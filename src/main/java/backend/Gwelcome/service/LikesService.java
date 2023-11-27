@@ -1,6 +1,8 @@
 package backend.Gwelcome.service;
 
 import backend.Gwelcome.dto.policy.MyPolicyResponseDTO;
+import backend.Gwelcome.exception.ErrorCode;
+import backend.Gwelcome.exception.GwelcomeException;
 import backend.Gwelcome.model.Likes;
 import backend.Gwelcome.model.Member;
 import backend.Gwelcome.model.Policy;
@@ -24,9 +26,9 @@ public class LikesService {
     private final LikesRepository likesRepository;
 
     @Transactional
-    public String clickLikes(String userId, Long itemId){
-        Member member = memberRepository.findById(userId).orElseThrow(()->new IllegalStateException("유저 없음 오류"));
-        Policy policy = policyRepository.findById(itemId).orElseThrow(()->new IllegalStateException("아이템 없음 오류"));
+    public String clickLikes(String userId, Long policyId){
+        Member member = memberRepository.findById(userId).orElseThrow(()->new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        Policy policy = policyRepository.findById(policyId).orElseThrow(()->new GwelcomeException(ErrorCode.POLICY_NOT_FOUND));
 
         Likes likes = likesRepository.findByPolicyAndMember(policy,member);
         if(likes != null){
@@ -46,7 +48,7 @@ public class LikesService {
     }
 
     public List<MyPolicyResponseDTO> likeItems(String userId) {
-        Member member = memberRepository.findById(userId).orElseThrow(()->new IllegalStateException("유저 없음 오류"));
+        Member member = memberRepository.findById(userId).orElseThrow(()->new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
         List<Likes> likes = likesRepository.findByMember(member);
         List<Policy> policies = policyRepository.findByLikesIn(likes);
         List<MyPolicyResponseDTO> result = policies.stream()
