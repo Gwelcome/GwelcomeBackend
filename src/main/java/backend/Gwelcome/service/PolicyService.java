@@ -1,12 +1,18 @@
 package backend.Gwelcome.service;
 
 import backend.Gwelcome.dto.policy.PolicyRegisterDto;
+import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
+import backend.Gwelcome.exception.ErrorCode;
+import backend.Gwelcome.exception.GwelcomeException;
+import backend.Gwelcome.model.Member;
 import backend.Gwelcome.model.Policy;
+import backend.Gwelcome.model.Reply;
+import backend.Gwelcome.repository.MemberRepository;
 import backend.Gwelcome.repository.PolicyRepository;
+import backend.Gwelcome.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PolicyService {
 
     private final PolicyRepository policyRepository;
+    private final ReplyRepository replyRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void uploadPolicy(PolicyRegisterDto policyRegisterDto) {
@@ -43,5 +51,17 @@ public class PolicyService {
                 .support_scale(policyRegisterDto.getSupport_scale())
                 .build();
         policyRepository.save(policy);
+    }
+
+    @Transactional
+    public void replyWrite(ReplySaveRequestDto replySaveRequestDto, String userId,Long policyId) {
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        Policy policy = policyRepository.findById(policyId).orElseThrow(()-> new GwelcomeException(ErrorCode.POLICY_NOT_FOUND));
+        Reply reply = Reply.builder()
+                .content(replySaveRequestDto.getContent())
+                .member(member)
+                .policy(policy)
+                .build();
+        replyRepository.save(reply);
     }
 }

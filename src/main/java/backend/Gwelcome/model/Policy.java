@@ -21,6 +21,9 @@ public class Policy extends BaseTimeEntity{
     @OneToMany(mappedBy = "policy",cascade = CascadeType.ALL)
     private List<Likes> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "policy", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Reply> reply;
+
     @Column(name = "name")
     private String name;
     @Column(name = "photo_url")
