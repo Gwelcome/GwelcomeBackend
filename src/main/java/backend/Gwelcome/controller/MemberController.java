@@ -36,10 +36,15 @@ public class MemberController {
 
     @Value("${kakao.client-id}")
     private String kakao_client_id;
+    @Value("${kakao.redirect_url}")
+    private String kakao_redirect_url;
     @Value("${naver.client-id}")
     private String naver_client_id;
     @Value("${naver.client_secret}")
     private String naver_client_secret;
+    @Value("${naver.redirect_url}")
+    private String naver_redirect_url;
+
 
     private final MemberService memberService;
     private final JwtProvider jwtProvider;
@@ -53,7 +58,7 @@ public class MemberController {
 
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakao_client_id);
-        params.add("redirect_uri", "http://localhost:8080/auth/kakao/callback");
+        params.add("redirect_uri", kakao_redirect_url);
         params.add("code", code);
 
         return webClient.post()
@@ -117,7 +122,7 @@ public class MemberController {
         tokenParams.add("grant_type", "authorization_code");
         tokenParams.add("client_id", naver_client_id);
         tokenParams.add("client_secret", naver_client_secret);
-        tokenParams.add("redirect_uri", "http://localhost:8080/login/oauth2/code/naver");
+        tokenParams.add("redirect_uri", naver_redirect_url);
         tokenParams.add("code", code);
 
         WebClient.RequestBodySpec request = (WebClient.RequestBodySpec) webClientBuilder.build().post()
