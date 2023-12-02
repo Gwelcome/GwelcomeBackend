@@ -28,6 +28,8 @@ public class Policy extends BaseTimeEntity{
     private String name;
     @Column(name = "photo_url")
     private String photo_url;
+    @Column(name = "policy_field")
+    private String policy_field;
     @Column(name = "introduction")
     private String introduction;
     @Column(name = "business_operation_period")

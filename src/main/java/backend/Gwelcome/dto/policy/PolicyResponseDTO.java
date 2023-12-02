@@ -10,4 +10,6 @@ public class PolicyResponseDTO {
     private String title;
     private String intro;
     private String image_url;
+    private String policy_field;
+    private String d_day;
 }

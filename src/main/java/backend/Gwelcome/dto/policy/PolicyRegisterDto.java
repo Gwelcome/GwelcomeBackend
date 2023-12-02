@@ -28,4 +28,5 @@ public class PolicyRegisterDto {
     private String documents;
     private String judge_presentation;
     private String request_procedure;
+    private String policy_field;
 }

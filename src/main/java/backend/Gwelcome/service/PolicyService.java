@@ -1,6 +1,5 @@
 package backend.Gwelcome.service;
 
-import backend.Gwelcome.dto.policy.MyPolicyResponseDTO;
 import backend.Gwelcome.dto.policy.PolicyRegisterDto;
 import backend.Gwelcome.dto.policy.PolicyResponseDTO;
 import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
@@ -18,8 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +56,7 @@ public class PolicyService {
                 .useful_info(policyRegisterDto.getUseful_info())
                 .photo_url(policyRegisterDto.getPhoto_url())
                 .support_scale(policyRegisterDto.getSupport_scale())
+                .policy_field(policyRegisterDto.getPolicy_field())
                 .build();
         policyRepository.save(policy);
     }
@@ -74,12 +75,32 @@ public class PolicyService {
 
     public Page<PolicyResponseDTO> list(Pageable pageable) {
         Page<Policy> policyList = policyRepository.findAll(pageable);
+
         Page<PolicyResponseDTO> result = policyList.map(m->PolicyResponseDTO.builder()
                 .id(m.getId())
                 .title(m.getName())
                 .intro(m.getIntroduction())
                 .image_url(m.getPhoto_url())
+                .policy_field(m.getPolicy_field())
+                .d_day(D_DAY(m.getBusiness_operation_period()))
                 .build());
         return result;
+    }
+
+    private static String D_DAY(String finalDay) {
+        Date date;
+        try {
+            date = new SimpleDateFormat("yyyy/MM/dd").parse(finalDay);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date now = new Date();
+        long remainDate;
+        if (date.getTime() < now.getTime()) {
+            remainDate = 0;
+        }
+        long diffSec = (date.getTime() - now.getTime()) / 1000;
+        remainDate = diffSec / (24 * 60 * 60);
+        return "D-"+String.valueOf(remainDate);
     }
 }
