@@ -1,4 +1,4 @@
-package communication.chatgpt.data;
+package backend.Gwelcome.model;
 
 public enum Chat {
     CHAT_ENDPOINT("https://api.openai.com/v1/chat/completions"),

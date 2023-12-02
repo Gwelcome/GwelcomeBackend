@@ -4,9 +4,9 @@ import java.util.Collections;
 
 import backend.Gwelcome.dto.openai.ChatMessageDto;
 import backend.Gwelcome.dto.openai.ChatParsedRequestDto;
+import backend.Gwelcome.model.Chat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import communication.chatgpt.data.Chat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
