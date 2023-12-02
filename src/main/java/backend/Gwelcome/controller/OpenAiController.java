@@ -19,10 +19,7 @@ public class OpenAiController {
     private String chatRequest = "";
 
     @PostMapping("/chat")
-    @Operation(
-            summary = "chatbot",
-            description = "질문과 응답을 이어붙여 세션을 유지하는 방식의 질문하기 api 입니다."
-    )
+    @Operation(summary = "chatbot",description = "질문과 응답을 이어붙여 세션을 유지하는 방식의 질문하기 api 입니다.")
     public ResponseEntity<String> chat(@RequestBody String request) throws JsonProcessingException {
         chatRequest = chatRequest + request;
         HttpEntity<String> openAiRequest = openAiRequestEntity.chatParsed(chatRequest);
@@ -32,10 +29,7 @@ public class OpenAiController {
     }
 
     @GetMapping("/chat/reset")
-    @Operation(
-            summary = "질문하기 reset",
-            description = "사용자의 질문을 reset하여 질문 세션을 초기화 하는 api 입니다."
-    )
+    @Operation(summary = "질문하기 reset",description = "사용자의 질문을 reset하여 질문 세션을 초기화 하는 api 입니다.")
     public ResponseEntity<String> chatQuestionReset() {
         chatRequest = "";
         return ResponseEntity.ok("success");

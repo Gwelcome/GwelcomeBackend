@@ -17,4 +17,5 @@ public class OpenAiChatResponseDto {
     private String model;
     private ChatUsageDto usage;
     private List<ChatChoiceDto> choices;
+    private String system_fingerprint;
 }
