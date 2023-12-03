@@ -1,13 +1,17 @@
 package backend.Gwelcome.service;
 
 import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
+import backend.Gwelcome.dto.login.MemberRefreshTokenDTO;
+import backend.Gwelcome.dto.login.TokensResponseDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
 import backend.Gwelcome.dto.naverlogin.NaverUserDTO;
 import backend.Gwelcome.exception.ErrorCode;
 import backend.Gwelcome.exception.GwelcomeException;
+import backend.Gwelcome.jwt.JwtProvider;
 import backend.Gwelcome.model.Member;
 import backend.Gwelcome.model.Role;
 import backend.Gwelcome.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +27,8 @@ public class MemberService {
     private String password;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+
 
     @Transactional
     public void kakaoSignUp(KakaoUserDTO kakaoUserDTO){
@@ -78,5 +84,12 @@ public class MemberService {
     public String memberFindId(String email) {
         Member member = memberRepository.findByEmail(email).get();
         return member.getId();
+    }
+
+    public TokensResponseDTO reissueToken(String userId) throws JsonProcessingException {
+        Member member = memberRepository.findById(userId).orElseThrow(() -> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        MemberRefreshTokenDTO memberRefreshTokenDTO = MemberRefreshTokenDTO.of(member);
+        TokensResponseDTO tokens = jwtProvider.reissueAtk(memberRefreshTokenDTO);
+        return tokens;
     }
 }

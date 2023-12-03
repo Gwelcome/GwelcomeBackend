@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -180,5 +181,12 @@ public class MemberController {
     public String signUp(@RequestBody @Valid signUpRequestDTO signUpRequestDTO){
         memberService.signUp(signUpRequestDTO);
         return "회원가입 완료";
+    }
+
+    @PostMapping("/api/reissue")
+    @Operation(summary = "access토큰 재발급",description = "access 토큰이 만료된 경우 refresh 토큰을 이용하여 access 토큰을 갱신합니다.")
+    public ResponseDTO<TokensResponseDTO> reissue(@AuthenticationPrincipal String userId) throws JsonProcessingException {
+        TokensResponseDTO reissueToken = memberService.reissueToken(userId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),reissueToken);
     }
 }

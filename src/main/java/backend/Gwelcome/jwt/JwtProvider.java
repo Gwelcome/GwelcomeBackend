@@ -1,5 +1,6 @@
 package backend.Gwelcome.jwt;
 
+import backend.Gwelcome.dto.login.MemberRefreshTokenDTO;
 import backend.Gwelcome.dto.login.TokensResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,12 @@ public class JwtProvider {
     @PostConstruct
     protected void init() {
         key = Base64.getEncoder().encodeToString(key.getBytes());
+    }
+
+    public TokensResponseDTO reissueAtk(MemberRefreshTokenDTO memberRefreshTokenDTO) throws JsonProcessingException {
+        Subject atkSubject = Subject.atk(memberRefreshTokenDTO.getUserId());
+        String atk = createToken(atkSubject, atkLive);
+        return new TokensResponseDTO(atk, null);
     }
 
     public TokensResponseDTO createTokensByLogin(String id) throws JsonProcessingException {
