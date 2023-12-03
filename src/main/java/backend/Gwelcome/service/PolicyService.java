@@ -1,5 +1,6 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.policy.PolicyOneResponseDTO;
 import backend.Gwelcome.dto.policy.PolicyRegisterDto;
 import backend.Gwelcome.dto.policy.PolicyResponseDTO;
 import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
@@ -102,5 +103,22 @@ public class PolicyService {
         long diffSec = (date.getTime() - now.getTime()) / 1000;
         remainDate = diffSec / (24 * 60 * 60);
         return "D-"+String.valueOf(remainDate);
+    }
+
+    public PolicyOneResponseDTO readOne(Long policyId) {
+        Policy policy = policyRepository.findById(policyId).orElseThrow(() -> new GwelcomeException(ErrorCode.POLICY_NOT_FOUND));
+        PolicyOneResponseDTO policyOne = PolicyOneResponseDTO.builder()
+                .id(policy.getId())
+                .title(policy.getName())
+                .intro(policy.getIntroduction())
+                .image_url(policy.getPhoto_url())
+                .likesCount(policy.getTotalLikes())
+                .policy_field(policy.getPolicy_field())
+                .d_day(D_DAY(policy.getBusiness_operation_period()))
+                .living_income(policy.getLiving_income())
+                .age(policy.getAge())
+                .business_application_period(policy.getBusiness_application_period())
+                .build();
+        return policyOne;
     }
 }

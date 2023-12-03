@@ -1,6 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.ResponseDTO;
+import backend.Gwelcome.dto.policy.PolicyOneResponseDTO;
 import backend.Gwelcome.dto.policy.PolicyRegisterDto;
 import backend.Gwelcome.dto.policy.PolicyResponseDTO;
 import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
@@ -23,6 +24,13 @@ import org.springframework.web.bind.annotation.*;
 public class PolicyController {
 
     private final PolicyService policyService;
+
+    @GetMapping("/policy/{policyId}")
+    @Operation(summary = "청년 정책 상세보기", description = "청년 정책 상세 보기 api 입니다.")
+    public ResponseDTO<PolicyOneResponseDTO> policyOne(@PathVariable Long policyId){
+        PolicyOneResponseDTO policyOneResponseDTO = policyService.readOne(policyId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),policyOneResponseDTO);
+    }
 
     @GetMapping("/policy")
     @Operation(summary = "청년 정책 목록", description = "청년 정책 목록을 제공하는 api 입니다. (페이징 5개씩)")
