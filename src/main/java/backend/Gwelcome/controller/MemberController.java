@@ -4,6 +4,7 @@ import backend.Gwelcome.dto.ResponseDTO;
 import backend.Gwelcome.dto.kakaologin.KakaoLoginResponseDTO;
 import backend.Gwelcome.dto.kakaologin.KakaoOauthToken;
 import backend.Gwelcome.dto.kakaologin.KakaoUserDTO;
+import backend.Gwelcome.dto.login.MyPageDTO;
 import backend.Gwelcome.dto.login.TokensResponseDTO;
 import backend.Gwelcome.dto.login.signUpRequestDTO;
 import backend.Gwelcome.dto.naverlogin.NaverLoginResponseDTO;
@@ -188,5 +189,12 @@ public class MemberController {
     public ResponseDTO<TokensResponseDTO> reissue(@AuthenticationPrincipal String userId) throws JsonProcessingException {
         TokensResponseDTO reissueToken = memberService.reissueToken(userId);
         return new ResponseDTO<>(HttpStatus.OK.value(),reissueToken);
+    }
+
+    @GetMapping("/api/mypage")
+    @Operation(summary = "마이페이지",description = "마이페이지 화면을 구성합니다.")
+    public ResponseDTO<?> myPage(@AuthenticationPrincipal String userId){
+        MyPageDTO myPageDTO = memberService.myPage(userId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),myPageDTO);
     }
 }

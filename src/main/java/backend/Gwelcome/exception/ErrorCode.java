@@ -16,7 +16,8 @@ public enum ErrorCode {
     JWT_UNSUPPORTED(HttpStatus.BAD_REQUEST,"지원하지 않는 JWT 토큰입니다."),
     JWT_MALFORMED(HttpStatus.BAD_REQUEST,"올바른 JWT 토큰의 형태가 아닙니다."),
     JWT_SIGNATURE(HttpStatus.BAD_REQUEST,"올바른 SIGNATURE가 아닙니다."),
-    JWT_ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST,"잘못된 정보를 넣었습니다.");
+    JWT_ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST,"잘못된 정보를 넣었습니다."),
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요 클릭한 정보를 찾을 수 없습니다.");
     private final HttpStatus httpstatus;
     private final String message;
 }
