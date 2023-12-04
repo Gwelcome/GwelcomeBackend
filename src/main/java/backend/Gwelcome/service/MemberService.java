@@ -71,7 +71,7 @@ public class MemberService {
     @Transactional
     public void signUp(signUpRequestDTO signUpRequest) {
         Member existMember = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-        existMember.addInfo(signUpRequest.getGender(),signUpRequest.getAge(),signUpRequest.getLivingArea());
+        existMember.addInfo(signUpRequest.getGender(),signUpRequest.getAge(),signUpRequest.getLivingArea(),signUpRequest.getInterests());
     }
 
     public Member memberFind(String email) {

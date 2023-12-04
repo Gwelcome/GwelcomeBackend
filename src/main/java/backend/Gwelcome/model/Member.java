@@ -42,9 +42,13 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public void addInfo(String gender, int age, String livingArea) {
+    @Enumerated(EnumType.STRING)
+    private Interest interest;
+
+    public void addInfo(String gender, int age, String livingArea, String interest) {
         this.gender = Gender.valueOf(gender);
         this.age = age;
         this.livingArea = LivingArea.valueOf(livingArea);
+        this.interest = Interest.valueOf(interest);
     }
 }
