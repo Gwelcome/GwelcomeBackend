@@ -6,9 +6,8 @@ import backend.Gwelcome.model.Chat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,7 +20,8 @@ import java.util.Objects;
 public class ResponseEntityByWebClient {
 
     private final ObjectMapper objectMapper;
-    private final WebClient webClient;
+    @Value("${open-ai.key}")
+    private String key;
 
     public ResponseEntity<String> chatParsed(HttpEntity<String> openAiRequest) throws JsonProcessingException {
         String openAiResponseBody = getOpenAiStringResponseBody(openAiRequest.getBody(), Chat.CHAT_ENDPOINT.data());
@@ -34,9 +34,12 @@ public class ResponseEntityByWebClient {
 
     private String getOpenAiStringResponseBody(String openAiRequestBody, String url) {
 
+        WebClient webClient = WebClient.builder().build();
         Mono<ResponseEntity<String>> responseMono = webClient
                 .method(HttpMethod.POST)
                 .uri(url)
+                .header(HttpHeaders.AUTHORIZATION ,"Bearer "+key)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(openAiRequestBody))
                 .retrieve()
                 .toEntity(String.class);

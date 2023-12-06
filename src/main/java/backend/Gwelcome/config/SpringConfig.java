@@ -21,28 +21,10 @@ public class SpringConfig {
     }
 
     @Bean
-    public WebClient webClient() {
-        return WebClient.builder()
-                .defaultHeaders(
-                        headers -> {
-                            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                            headers.setBearerAuth(key);
-                        }
-                )
-                .build();
-    }
-
-    @Bean
     public HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(key);
         return headers;
-    }
-
-
-    @Bean
-    public ResponseEntityByWebClient openAiResponse() {
-        return new ResponseEntityByWebClient(objectMapper(), webClient());
     }
 }
