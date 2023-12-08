@@ -1,10 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.ResponseDTO;
-import backend.Gwelcome.dto.policy.PolicyOneResponseDTO;
-import backend.Gwelcome.dto.policy.PolicyRegisterDto;
-import backend.Gwelcome.dto.policy.PolicyResponseDTO;
-import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
+import backend.Gwelcome.dto.policy.*;
 import backend.Gwelcome.service.PolicyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +12,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -52,5 +51,12 @@ public class PolicyController {
                             @PathVariable Long policyId){
         policyService.replyWrite(replySaveRequestDto,userId,policyId);
         return "댓글 작성 완료";
+    }
+
+    @GetMapping("/policy/customized")
+    @Operation(summary = "맞춤형 정책", description = "청년 맞춤형 정책 3가지를 보여주는 api 입니다.")
+    public ResponseDTO<List<CustomizedPolicyResponseDTO>> myPolicy(@AuthenticationPrincipal String userId){
+        List<CustomizedPolicyResponseDTO> customizedPolicyResponseDTO = policyService.myPolicy(userId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),customizedPolicyResponseDTO);
     }
 }

@@ -1,9 +1,6 @@
 package backend.Gwelcome.service;
 
-import backend.Gwelcome.dto.policy.PolicyOneResponseDTO;
-import backend.Gwelcome.dto.policy.PolicyRegisterDto;
-import backend.Gwelcome.dto.policy.PolicyResponseDTO;
-import backend.Gwelcome.dto.policy.ReplySaveRequestDto;
+import backend.Gwelcome.dto.policy.*;
 import backend.Gwelcome.exception.ErrorCode;
 import backend.Gwelcome.exception.GwelcomeException;
 import backend.Gwelcome.model.Member;
@@ -14,6 +11,7 @@ import backend.Gwelcome.repository.PolicyRepository;
 import backend.Gwelcome.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -113,5 +114,16 @@ public class PolicyService {
                 .policy_field(policy.getPolicy_field())
                 .build();
         return policyOne;
+    }
+
+    public List<CustomizedPolicyResponseDTO> myPolicy(String userId) {
+        Pageable pageable = PageRequest.of(0, 3);
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        String interest = member.getInterest();
+        String[] split = interest.split(",");
+        List<Policy> policies = policyRepository.memberCustomizedPolicy(split[0],pageable);
+        List<CustomizedPolicyResponseDTO> customizedPolicyResponseDTO = policies.stream().map(m ->
+                new CustomizedPolicyResponseDTO(m.getId(), m.getPhoto_url(), m.getName(), m.getPolicy_summary())).collect(Collectors.toList());
+        return customizedPolicyResponseDTO;
     }
 }
