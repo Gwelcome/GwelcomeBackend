@@ -1,5 +1,7 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.chat.ChatRequestDTO;
+import backend.Gwelcome.dto.chat.ChatResponseDTO;
 import backend.Gwelcome.dto.chat.SimilarChatDto;
 import backend.Gwelcome.dto.chat.SimilarQuestionDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +21,9 @@ import org.springframework.web.client.RestTemplate;
 public class ChatbotService {
     @Value("${ai.server}")
     private String aiServerUrl;
+
+    @Value("${ai.chat}")
+    private String aiChatUrl;
 
     public SimilarQuestionDto similarQuestion(SimilarChatDto similarChatDto) throws JSONException, JsonProcessingException {
 
@@ -43,5 +48,28 @@ public class ChatbotService {
         ObjectMapper objectMapper = new ObjectMapper();
         SimilarQuestionDto similarQuestionDto = objectMapper.readValue(response.getBody(), SimilarQuestionDto.class);
         return similarQuestionDto;
+    }
+
+    public ChatResponseDTO question(ChatRequestDTO chatRequestDTO) throws JSONException, JsonProcessingException {
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("question",chatRequestDTO.getQuestion());
+
+        HttpEntity<String> stringHttpEntity = new HttpEntity<>(jsonObject.toString(), headers);
+
+        ResponseEntity<String> response = rt.exchange(
+                aiChatUrl,
+                HttpMethod.POST,
+                stringHttpEntity,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ChatResponseDTO chatResponseDTO = objectMapper.readValue(response.getBody(), ChatResponseDTO.class);
+        return chatResponseDTO;
     }
 }

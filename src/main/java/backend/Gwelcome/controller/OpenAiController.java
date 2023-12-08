@@ -1,6 +1,8 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.ResponseDTO;
+import backend.Gwelcome.dto.chat.ChatRequestDTO;
+import backend.Gwelcome.dto.chat.ChatResponseDTO;
 import backend.Gwelcome.dto.chat.SimilarChatDto;
 import backend.Gwelcome.dto.chat.SimilarQuestionDto;
 import backend.Gwelcome.service.ChatbotService;
@@ -47,5 +49,12 @@ public class OpenAiController {
     public ResponseDTO<SimilarQuestionDto> top3Question(@RequestBody SimilarChatDto similarChatDto) throws JSONException, JsonProcessingException {
         SimilarQuestionDto similarQuestionDto = chatbotService.similarQuestion(similarChatDto);
         return new ResponseDTO<>(HttpStatus.OK.value(), similarQuestionDto);
+    }
+
+    @PostMapping("/chat/server")
+    @Operation(summary = "챗봇 서비스",description = "챗봇 서비스 제공하는 api 입니다.")
+    public ResponseDTO<ChatResponseDTO> question(@RequestBody ChatRequestDTO chatRequestDTO)throws JSONException, JsonProcessingException{
+        ChatResponseDTO chatResponseDTO = chatbotService.question(chatRequestDTO);
+        return new ResponseDTO<>(HttpStatus.OK.value(),chatResponseDTO);
     }
 }
