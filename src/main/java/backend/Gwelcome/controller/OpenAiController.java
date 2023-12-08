@@ -1,10 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.ResponseDTO;
-import backend.Gwelcome.dto.chat.ChatRequestDTO;
-import backend.Gwelcome.dto.chat.ChatResponseDTO;
-import backend.Gwelcome.dto.chat.SimilarChatDto;
-import backend.Gwelcome.dto.chat.SimilarQuestionDto;
+import backend.Gwelcome.dto.chat.*;
 import backend.Gwelcome.service.ChatbotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +50,15 @@ public class OpenAiController {
 
     @PostMapping("/chat/server")
     @Operation(summary = "챗봇 서비스",description = "챗봇 서비스 제공하는 api 입니다.")
-    public ResponseDTO<ChatResponseDTO> question(@RequestBody ChatRequestDTO chatRequestDTO)throws JSONException, JsonProcessingException{
+    public ResponseDTO<ChatResponseDTO> question(@RequestBody ChatRequestDTO chatRequestDTO) throws JSONException, JsonProcessingException{
         ChatResponseDTO chatResponseDTO = chatbotService.question(chatRequestDTO);
         return new ResponseDTO<>(HttpStatus.OK.value(),chatResponseDTO);
+    }
+
+    @PostMapping("/chat/button")
+    @Operation(summary = "버튼형 챗봇 서비스 기능",description = "버튼형 챗봇 서비스 제공하는 api 입니다.")
+    public ResponseDTO<ButtonChatResponseDTO> buttonQuestion(@RequestBody ButtonChatRequestDTO buttonChatRequestDTO) throws JSONException, JsonProcessingException{
+        ButtonChatResponseDTO buttonChatResponseDTO = chatbotService.buttonQuestion(buttonChatRequestDTO);
+        return new ResponseDTO<>(HttpStatus.OK.value(),buttonChatResponseDTO);
     }
 }

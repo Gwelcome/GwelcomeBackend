@@ -1,9 +1,6 @@
 package backend.Gwelcome.service;
 
-import backend.Gwelcome.dto.chat.ChatRequestDTO;
-import backend.Gwelcome.dto.chat.ChatResponseDTO;
-import backend.Gwelcome.dto.chat.SimilarChatDto;
-import backend.Gwelcome.dto.chat.SimilarQuestionDto;
+import backend.Gwelcome.dto.chat.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +21,9 @@ public class ChatbotService {
 
     @Value("${ai.chat}")
     private String aiChatUrl;
+
+    @Value("${ai.buttonChat}")
+    private String aiButtonChatUrl;
 
     public SimilarQuestionDto similarQuestion(SimilarChatDto similarChatDto) throws JSONException, JsonProcessingException {
 
@@ -71,5 +71,29 @@ public class ChatbotService {
         ObjectMapper objectMapper = new ObjectMapper();
         ChatResponseDTO chatResponseDTO = objectMapper.readValue(response.getBody(), ChatResponseDTO.class);
         return chatResponseDTO;
+    }
+
+    public ButtonChatResponseDTO buttonQuestion(ButtonChatRequestDTO buttonChatRequestDTO) throws JSONException, JsonProcessingException {
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("policy_name",buttonChatRequestDTO.getPolicy_name());
+        jsonObject.put("question",buttonChatRequestDTO.getQuestion());
+
+        HttpEntity<String> stringHttpEntity = new HttpEntity<>(jsonObject.toString(), headers);
+
+        ResponseEntity<String> response = rt.exchange(
+                aiButtonChatUrl,
+                HttpMethod.POST,
+                stringHttpEntity,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ButtonChatResponseDTO buttonChatResponseDTO = objectMapper.readValue(response.getBody(), ButtonChatResponseDTO.class);
+        return buttonChatResponseDTO;
     }
 }
