@@ -49,7 +49,7 @@ public class MemberService {
         Member member = Member.builder()
                 .username(kakaoUserDTO.getProperties().getNickname())
                 .email(kakaoUserDTO.getKakao_account().getEmail())
-                .password(passwordEncoder.encode( password))
+                .password(passwordEncoder.encode(password))
                 .profile_image_url(kakaoUserDTO.getProperties().getProfile_image())
                 .provider("카카오로그인")
                 .role(Role.USER)
@@ -103,7 +103,9 @@ public class MemberService {
 
     public MyPageDTO myPage(String userId) {
         Member member = memberRepository.findById(userId).orElseThrow(() -> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
-        long countPoliciesByMember = policyRepository.countPoliciesByMember(String.valueOf(member.getInterest()));
+        String interest = member.getInterest();
+        String[] split = interest.split(",");
+        long countPoliciesByMember = policyRepository.countPoliciesByMember(split[0]);
         long countLikesByMember = likesRepository.countLikesByMember(userId);
         long countRepliesByMember = replyRepository.countRepliesByMember(userId);
 

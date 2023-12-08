@@ -1,6 +1,5 @@
 package backend.Gwelcome.dto.policy;
 
-import backend.Gwelcome.model.Policy;
 import lombok.Builder;
 import lombok.Data;
 
