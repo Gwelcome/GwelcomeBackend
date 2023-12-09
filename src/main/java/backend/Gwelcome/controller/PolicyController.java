@@ -53,6 +53,13 @@ public class PolicyController {
         return "댓글 작성 완료";
     }
 
+    @GetMapping("/reply/{policyId}")
+    @Operation(summary = "청년 정책 댓글 조회", description = "청년 정책을 댓글 조회하는 api 입니다.")
+    public ResponseDTO<NewReplyResponseDTO<Object>> reply(@PathVariable Long policyId){
+        NewReplyResponseDTO<Object> objectNewReplyResponseDTO = policyService.commendList(policyId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),objectNewReplyResponseDTO);
+    }
+
     @GetMapping("/policy/customized")
     @Operation(summary = "맞춤형 정책", description = "청년 맞춤형 정책 3가지를 보여주는 api 입니다.")
     public ResponseDTO<List<CustomizedPolicyResponseDTO>> myPolicy(@AuthenticationPrincipal String userId){

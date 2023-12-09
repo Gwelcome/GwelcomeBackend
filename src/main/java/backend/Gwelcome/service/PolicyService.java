@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -125,5 +124,15 @@ public class PolicyService {
         List<CustomizedPolicyResponseDTO> customizedPolicyResponseDTO = policies.stream().map(m ->
                 new CustomizedPolicyResponseDTO(m.getId(), m.getPhoto_url(), m.getName(), m.getPolicy_summary())).collect(Collectors.toList());
         return customizedPolicyResponseDTO;
+    }
+
+    public NewReplyResponseDTO<Object> commendList(Long policyId) {
+        List<Reply> replies = replyRepository.replyPolicy(policyId);
+        int countReplies = replyRepository.countRepliesByPolicy(policyId);
+        List<ReplyResponseDTO> replyResponseDTO = replies.stream()
+                .map(m -> new ReplyResponseDTO(m.getId(), m.getContent(), m.getMember().getUsername(),m.getCreatedDate()))
+                .collect(Collectors.toList());
+        NewReplyResponseDTO<Object> newReplyResponseDTO = new NewReplyResponseDTO<>(countReplies, replyResponseDTO);
+        return newReplyResponseDTO;
     }
 }
