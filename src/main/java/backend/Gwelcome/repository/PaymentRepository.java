@@ -11,4 +11,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     @Query("SELECT p FROM Payment p WHERE p.orderId = :orderId")
     Payment findOrderId (@Param("orderId") String orderId);
 
+    @Query("SELECT sum(p.Money) FROM Payment p")
+    Long getTotalDonateAmount();
+
 }

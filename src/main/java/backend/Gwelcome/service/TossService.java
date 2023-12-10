@@ -1,5 +1,6 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.toss.DonateAmount;
 import backend.Gwelcome.dto.toss.MemberPayDTO;
 import backend.Gwelcome.exception.ErrorCode;
 import backend.Gwelcome.exception.GwelcomeException;
@@ -69,5 +70,13 @@ public class TossService {
         Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
         Payment payments = paymentRepository.findOrderId(memberPayDTO.getOrderId());
         payments.addInfo(member);
+    }
+
+    public DonateAmount totalDonate() {
+        Long totalDonateAmount = paymentRepository.getTotalDonateAmount();
+        DonateAmount donateAmount = DonateAmount.builder()
+                .totalDonateAmount(totalDonateAmount)
+                .build();
+        return donateAmount;
     }
 }

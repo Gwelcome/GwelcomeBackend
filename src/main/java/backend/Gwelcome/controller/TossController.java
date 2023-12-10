@@ -1,6 +1,7 @@
 package backend.Gwelcome.controller;
 
 import backend.Gwelcome.dto.ResponseDTO;
+import backend.Gwelcome.dto.toss.DonateAmount;
 import backend.Gwelcome.dto.toss.MemberPayDTO;
 import backend.Gwelcome.service.TossService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,13 +23,19 @@ public class TossController {
 
     private final TossService tossService;
 
+    @GetMapping("/totalDonate")
+    @Operation(summary = "후원금 총 금액",description = "후원금 총 금액을 확인하는 api 입니다.")
+    public ResponseDTO<DonateAmount> totalDonate(){
+        DonateAmount donateAmount = tossService.totalDonate();
+        return new ResponseDTO<>(HttpStatus.OK.value(),donateAmount);
+    }
+
     @PostMapping("/success")
     @Operation(summary = "토스 결제 시스템 회원정보 추가",description = "토스 결제 시스템 회원 정보 추가 api 입니다.")
     public ResponseDTO<String> successPay(@AuthenticationPrincipal String userId, @RequestBody MemberPayDTO memberPayDTO){
         tossService.payUpdate(userId, memberPayDTO);
         return new ResponseDTO<>(HttpStatus.OK.value(),"결제 완료");
     }
-
 
     @GetMapping("/success")
     @Operation(summary = "토스 결제 시스템",description = "토스 결제 시스템 구축 api 입니다.")
