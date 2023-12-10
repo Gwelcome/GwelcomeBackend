@@ -3,7 +3,6 @@ package backend.Gwelcome.controller;
 import backend.Gwelcome.dto.ResponseDTO;
 import backend.Gwelcome.dto.toss.DonateAmount;
 import backend.Gwelcome.dto.toss.MemberPayDTO;
-import backend.Gwelcome.dto.toss.MyDonate;
 import backend.Gwelcome.dto.toss.MyDonateResponseDTO;
 import backend.Gwelcome.service.TossService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

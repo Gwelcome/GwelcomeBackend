@@ -1,6 +1,5 @@
 package backend.Gwelcome.dto.toss;
 
-import backend.Gwelcome.dto.policy.ReplyResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
