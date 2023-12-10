@@ -1,10 +1,14 @@
 package backend.Gwelcome.service;
 
-import backend.Gwelcome.dto.toss.PaymentResponseDTO;
+import backend.Gwelcome.dto.toss.MemberPayDTO;
+import backend.Gwelcome.exception.ErrorCode;
+import backend.Gwelcome.exception.GwelcomeException;
+import backend.Gwelcome.model.Member;
+import backend.Gwelcome.model.Payment;
+import backend.Gwelcome.repository.MemberRepository;
+import backend.Gwelcome.repository.PaymentRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class TossService {
 
@@ -25,8 +30,12 @@ public class TossService {
     private String secret_key;
 
     private static final String tossPaymentSuccessUrl = "https://api.tosspayments.com/v1/payments/confirm";
+
+    private final MemberRepository memberRepository;
+    private final PaymentRepository paymentRepository;
+
     @Transactional
-    public PaymentResponseDTO payment(String orderId, String paymentKey, long amount) throws JSONException, JsonProcessingException {
+    public void payment(String orderId, String paymentKey, long amount) throws JSONException, JsonProcessingException, UnsupportedEncodingException {
 
         RestTemplate rt = new RestTemplate();
 
@@ -48,9 +57,17 @@ public class TossService {
                 stringHttpEntity,
                 String.class
         );
+        Payment payment = Payment.builder()
+                .Money(amount)
+                .orderId(orderId)
+                .build();
+        paymentRepository.save(payment);
+    }
 
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-        PaymentResponseDTO paymentResponseDTO = objectMapper.readValue(response.getBody(), PaymentResponseDTO.class);
-        return paymentResponseDTO;
+    @Transactional
+    public void payUpdate(String userId, MemberPayDTO memberPayDTO) {
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        Payment payments = paymentRepository.findOrderId(memberPayDTO.getOrderId());
+        payments.addInfo(member);
     }
 }
