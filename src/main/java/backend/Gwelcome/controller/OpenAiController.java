@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -60,5 +61,12 @@ public class OpenAiController {
     public ResponseDTO<ButtonChatResponseDTO> buttonQuestion(@RequestBody ButtonChatRequestDTO buttonChatRequestDTO) throws JSONException, JsonProcessingException{
         ButtonChatResponseDTO buttonChatResponseDTO = chatbotService.buttonQuestion(buttonChatRequestDTO);
         return new ResponseDTO<>(HttpStatus.OK.value(),buttonChatResponseDTO);
+    }
+
+    @GetMapping("/chat/server")
+    @Operation(summary = "챗봇 서비스 화면 초기문구",description = "사용자 맞춤형 챗봇 서비스 초기화면 문구 입니다.")
+    public ResponseDTO<String> screen(@AuthenticationPrincipal String userId){
+        String screen = chatbotService.screen(userId);
+        return new ResponseDTO<>(HttpStatus.OK.value(),screen);
     }
 }
