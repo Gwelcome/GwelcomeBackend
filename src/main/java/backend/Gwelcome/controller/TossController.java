@@ -3,6 +3,8 @@ package backend.Gwelcome.controller;
 import backend.Gwelcome.dto.ResponseDTO;
 import backend.Gwelcome.dto.toss.DonateAmount;
 import backend.Gwelcome.dto.toss.MemberPayDTO;
+import backend.Gwelcome.dto.toss.MyDonate;
+import backend.Gwelcome.dto.toss.MyDonateResponseDTO;
 import backend.Gwelcome.service.TossService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,13 @@ import java.io.UnsupportedEncodingException;
 public class TossController {
 
     private final TossService tossService;
+
+    @GetMapping("/donate/myPage")
+    @Operation(summary = "나의 후원금 확인하기",description = "나의 후원금 확인하기 api 입니다.")
+    public ResponseDTO<MyDonateResponseDTO> myDonate(@AuthenticationPrincipal String userId){
+        MyDonateResponseDTO myDonateResponseDTO = tossService.myDonate(userId);
+        return new ResponseDTO<>(HttpStatus.OK.value(), myDonateResponseDTO);
+    }
 
     @GetMapping("/totalDonate")
     @Operation(summary = "후원금 총 금액",description = "후원금 총 금액을 확인하는 api 입니다.")

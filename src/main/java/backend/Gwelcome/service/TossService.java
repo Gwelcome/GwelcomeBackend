@@ -2,6 +2,8 @@ package backend.Gwelcome.service;
 
 import backend.Gwelcome.dto.toss.DonateAmount;
 import backend.Gwelcome.dto.toss.MemberPayDTO;
+import backend.Gwelcome.dto.toss.MyDonate;
+import backend.Gwelcome.dto.toss.MyDonateResponseDTO;
 import backend.Gwelcome.exception.ErrorCode;
 import backend.Gwelcome.exception.GwelcomeException;
 import backend.Gwelcome.model.Member;
@@ -21,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,5 +82,16 @@ public class TossService {
                 .totalDonateAmount(totalDonateAmount)
                 .build();
         return donateAmount;
+    }
+
+    public MyDonateResponseDTO myDonate(String userId) {
+        Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
+        List<Payment> myPayments = paymentRepository.myDonate(userId);
+        Long myTotalDonateAmount = paymentRepository.getMyTotalDonateAmount(userId);
+        List<MyDonate> collect = myPayments.stream()
+                .map(m -> new MyDonate(m.getId(), m.getMoney(), m.getCreatedDate()))
+                .collect(Collectors.toList());
+        MyDonateResponseDTO myDonateResponseDTO = new MyDonateResponseDTO(member.getUsername(),myTotalDonateAmount,collect);
+        return myDonateResponseDTO;
     }
 }
