@@ -1,5 +1,9 @@
 package backend.Gwelcome.service;
 
+import backend.Gwelcome.dto.toss.PaymentResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NoArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +26,7 @@ public class TossService {
 
     private static final String tossPaymentSuccessUrl = "https://api.tosspayments.com/v1/payments/confirm";
     @Transactional
-    public void payment(String orderId, String paymentKey, long amount) throws JSONException {
+    public PaymentResponseDTO payment(String orderId, String paymentKey, long amount) throws JSONException, JsonProcessingException {
 
         RestTemplate rt = new RestTemplate();
 
@@ -44,5 +48,9 @@ public class TossService {
                 stringHttpEntity,
                 String.class
         );
+
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        PaymentResponseDTO paymentResponseDTO = objectMapper.readValue(response.getBody(), PaymentResponseDTO.class);
+        return paymentResponseDTO;
     }
 }
