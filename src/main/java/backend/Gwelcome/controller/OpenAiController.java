@@ -69,4 +69,11 @@ public class OpenAiController {
         String screen = chatbotService.screen(userId);
         return new ResponseDTO<>(HttpStatus.OK.value(),screen);
     }
+
+    @PostMapping("/chat/answer")
+    @Operation(summary = "맞춤형 정책 답안", description = "청년 맞춤형 정책 3가지를 답안 보여주는 api 입니다.")
+    public ResponseDTO<?> answerPolicy(@RequestBody ButtonChatAnswerRequestDTO buttonChatAnswerRequestDTO) throws JSONException, JsonProcessingException {
+        ButtonChatAnswerResponseDTO buttonChatAnswerResponseDTO = chatbotService.answer(buttonChatAnswerRequestDTO);
+        return new ResponseDTO<>(HttpStatus.OK.value(),buttonChatAnswerResponseDTO);
+    }
 }
