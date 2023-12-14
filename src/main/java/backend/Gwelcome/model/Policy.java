@@ -26,6 +26,7 @@ public class Policy extends BaseTimeEntity{
 
     @Column(name = "name")
     private String name;
+    @Lob
     @Column(name = "photo_url")
     private String photo_url;
     @Lob
@@ -47,6 +48,7 @@ public class Policy extends BaseTimeEntity{
     private String income;
     @Column(name = "job_state")
     private String job_state;
+    @Lob
     @Column(name = "restrict")
     private String restrict;
     @Lob
@@ -56,10 +58,12 @@ public class Policy extends BaseTimeEntity{
     private String judge_presentation;
     @Column(name = "website")
     private String website;
+    @Lob
     @Column(name = "extra_info")
     private String extra_info;
     @Column(name = "cs")
     private String cs;
+
     @Column(name = "policy_field")
     private String policy_field;
 
