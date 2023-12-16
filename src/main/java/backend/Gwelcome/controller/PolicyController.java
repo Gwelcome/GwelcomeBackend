@@ -33,8 +33,8 @@ public class PolicyController {
 
     @GetMapping("/policy")
     @Operation(summary = "청년 정책 목록", description = "청년 정책 목록을 제공하는 api 입니다. (페이징 5개씩)")
-    public ResponseDTO<Page<PolicyResponseDTO>> policy(@PageableDefault(size = 5) Pageable pageable){
-        Page<PolicyResponseDTO> list = policyService.list(pageable);
+    public ResponseDTO<List<PolicyResponseDTO>> policy(){
+        List<PolicyResponseDTO> list = policyService.list();
         return new ResponseDTO<>(HttpStatus.OK.value(),list);
     }
 

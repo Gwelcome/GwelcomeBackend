@@ -119,7 +119,7 @@ public class PolicyService {
         Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
         String interest = member.getInterest();
         String[] split = interest.split(",");
-        List<Policy> policies = policyRepository.memberCustomizedPolicy(split[0],split[1],split[2],pageable);
+        List<Policy> policies = policyRepository.memberCustomizedPolicy(split[1],split[0],split[2],pageable);
         List<CustomizedPolicyResponseDTO> customizedPolicyResponseDTO = policies.stream().map(m ->
                 new CustomizedPolicyResponseDTO(m.getId(), m.getPhoto_url(), m.getName(), m.getPolicy_summary())).collect(Collectors.toList());
         return customizedPolicyResponseDTO;
