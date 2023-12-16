@@ -10,7 +10,6 @@ import backend.Gwelcome.repository.MemberRepository;
 import backend.Gwelcome.repository.PolicyRepository;
 import backend.Gwelcome.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -67,17 +66,17 @@ public class PolicyService {
         replyRepository.save(reply);
     }
 
-    public Page<PolicyResponseDTO> list(Pageable pageable) {
-        Page<Policy> policyList = policyRepository.findAll(pageable);
+    public List<PolicyResponseDTO> list() {
+        List<Policy> all = policyRepository.findAll();
 
-        Page<PolicyResponseDTO> result = policyList.map(m->PolicyResponseDTO.builder()
+        List<PolicyResponseDTO> result = all.stream().map(m -> PolicyResponseDTO.builder()
                 .id(m.getId())
                 .title(m.getName())
                 .intro(m.getIntroduction())
                 .image_url(m.getPhoto_url())
                 .d_day(D_DAY(m.getOperation_period()))
                 .policy_field(m.getPolicy_field())
-                .build());
+                .build()).collect(Collectors.toList());
         return result;
     }
 
@@ -120,7 +119,7 @@ public class PolicyService {
         Member member = memberRepository.findById(userId).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
         String interest = member.getInterest();
         String[] split = interest.split(",");
-        List<Policy> policies = policyRepository.memberCustomizedPolicy(split[0],pageable);
+        List<Policy> policies = policyRepository.memberCustomizedPolicy(split[0],split[1],split[2],pageable);
         List<CustomizedPolicyResponseDTO> customizedPolicyResponseDTO = policies.stream().map(m ->
                 new CustomizedPolicyResponseDTO(m.getId(), m.getPhoto_url(), m.getName(), m.getPolicy_summary())).collect(Collectors.toList());
         return customizedPolicyResponseDTO;
