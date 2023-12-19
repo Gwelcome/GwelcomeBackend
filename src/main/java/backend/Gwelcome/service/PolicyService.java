@@ -43,7 +43,7 @@ public class PolicyService {
                 .introduction(policyRegisterDto.getIntroduction())
                 .income(policyRegisterDto.getIncome())
                 .job_state(policyRegisterDto.getJob_state())
-                .restrict(policyRegisterDto.getRestrict())
+                .restricts(policyRegisterDto.getRestrict())
                 .apply_method(policyRegisterDto.getApply_method())
                 .judge_presentation(policyRegisterDto.getJudge_presentation())
                 .website(policyRegisterDto.getWebsite())

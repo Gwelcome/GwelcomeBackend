@@ -49,8 +49,8 @@ public class Policy extends BaseTimeEntity{
     @Column(name = "job_state")
     private String job_state;
     @Lob
-    @Column(name = "restrict")
-    private String restrict;
+    @Column(name = "restricts")
+    private String restricts;
     @Lob
     @Column(name = "apply_method")
     private String apply_method;
