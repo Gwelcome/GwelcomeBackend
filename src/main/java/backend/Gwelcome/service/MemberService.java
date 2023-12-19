@@ -90,7 +90,7 @@ public class MemberService {
     }
 
     public String memberFindId(String email) {
-        Member member = memberRepository.findByEmail(email).get();
+        Member member = memberRepository.findByEmail(email).orElseThrow(()-> new GwelcomeException(ErrorCode.MEMBER_NOT_FOUND));
         return member.getId();
     }
 
