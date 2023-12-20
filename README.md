@@ -35,4 +35,4 @@
     - spring-boot 2.7.17
 
 ## 시스템 아키텍쳐
-![화이트보드 (2)](https://github.com/ji-hyeon97/Gwelcome/assets/79920930/87640554-43b3-45d8-abc3-3c43930d4f29)
+![화이트보드 (2)](https://github.com/ji-hyeon97/Gwelcome/assets/79920930/6cee404e-aa7d-4381-b4bd-6cb3d2ce105d)
